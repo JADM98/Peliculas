@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:peliculas/models/models.dart';
+import 'package:peliculas/models/search_response.dart';
 import 'package:peliculas/protected/protected.dart';
 
 class MoviesProvider extends ChangeNotifier {
@@ -22,11 +23,11 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   Future<String> _getJsonData(String endpoint, {int page = 1}) async {
-    var url = Uri.https(_baseUrl, endpoint,
+    final url = Uri.https(_baseUrl, endpoint,
         {'api_key': _apiKey, 'language': _lang, 'page': '$page'});
 
     // Await the http get response, then decode the json-formatted response.
-    var response = await http.get(url);
+    final response = await http.get(url);
 
     return response.body;
   }
@@ -48,14 +49,23 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   Future<List<Cast>> getMovieCast(int movieId) async {
-    //TODO: Revisar el mapa
     if (moviesCast.containsKey(movieId)) return moviesCast[movieId]!;
-
-    print('Pidiendo info al server');
 
     final String jsonData = await _getJsonData('3/movie/$movieId/credits');
     final creditResponse = CreditsResponse.fromJson(jsonData);
     moviesCast[movieId] = creditResponse.cast;
     return creditResponse.cast;
+  }
+
+  Future<List<Movie>> searchMovie(String query) async {
+    final url = Uri.https(_baseUrl, '3/search/movie',
+        {'api_key': _apiKey, 'language': _lang, 'query': query});
+
+    // Await the http get response, then decode the json-formatted response.
+    final response = await http.get(url);
+    final SearchResponse searchResponse =
+        SearchResponse.fromJson(response.body);
+
+    return searchResponse.results;
   }
 }

@@ -19,11 +19,7 @@ class DetailsScreen extends StatelessWidget {
         ),
         SliverList(
             delegate: SliverChildListDelegate([
-          _PosterAndTitle(
-              title: movie.title,
-              originalTitle: movie.originalTitle,
-              posterPath: movie.fullPosterImg,
-              voteAvg: movie.voteAverage),
+          _PosterAndTitle(movie: movie),
           _OverView(overview: movie.overview),
           _OverView(overview: movie.overview),
           _OverView(overview: movie.overview),
@@ -74,18 +70,9 @@ class _CustomAppBar extends StatelessWidget {
 }
 
 class _PosterAndTitle extends StatelessWidget {
-  const _PosterAndTitle(
-      {Key? key,
-      required this.posterPath,
-      required this.title,
-      required this.originalTitle,
-      required this.voteAvg})
-      : super(key: key);
+  const _PosterAndTitle({Key? key, required this.movie}) : super(key: key);
 
-  final String posterPath;
-  final String title;
-  final String originalTitle;
-  final double voteAvg;
+  final Movie movie;
 
   @override
   Widget build(BuildContext context) {
@@ -96,12 +83,15 @@ class _PosterAndTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: FadeInImage(
-              placeholder: const AssetImage('assets/no-image.jpg'),
-              image: NetworkImage(posterPath),
-              height: 150,
+          Hero(
+            tag: movie.heroId!,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: FadeInImage(
+                placeholder: const AssetImage('assets/no-image.jpg'),
+                image: NetworkImage(movie.fullPosterImg),
+                height: 150,
+              ),
             ),
           ),
           const SizedBox(width: 20),
@@ -110,13 +100,13 @@ class _PosterAndTitle extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  movie.title,
                   style: textTheme.headline5,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
                 Text(
-                  originalTitle,
+                  movie.originalTitle,
                   style: textTheme.subtitle1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -129,7 +119,7 @@ class _PosterAndTitle extends StatelessWidget {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      voteAvg.toString(),
+                      movie.voteAverage.toString(),
                       style: textTheme.caption,
                     )
                   ],
