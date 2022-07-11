@@ -9,6 +9,9 @@
 .history
 .svn/
 
+# Protected files
+lib/protected/api_key.dart
+
 # IntelliJ related
 *.iml
 *.ipr
